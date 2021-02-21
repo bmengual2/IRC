@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script  src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(document).ready(function(){
+            var socket = io('http://localhost:82/');
+            console.log('démarrage')
+            console.log(socket.rooms)
+            $("#Login_Register").click(function(){
+                socket.emit("login_register", {
+                    pseudo: $("#userName").val()
+                    });
+                
+            });
+
+            $("#Create").click(function(){
+                console.log("Create  émis")
+                socket.emit("create",{channel: "1er"})
+            })
+            $("#listUser").click(function(){
+                console.log("listUser émis")
+                socket.emit("users",{channel: "1er"})
+            })
+            $("#connectChan").click(function(){
+                console.log("demande de co  au channel")
+                socket.emit("join",{channel: "1er"})
+            })
+
+            $("#active").click(function(){
+                console.log("Message  émis")
+                socket.emit("activer", {channel : "1er"})
+            })
+            $("#send").click(function(){
+                socket.emit("messageChan", {
+                    message: $("#messageChan").val()
+                    })
+            })
+           
+            
+            socket.on("logged_in", function(pseudo){
+                console.log("activé !!! ")
+                console.log(pseudo)
+                console.log(socket.rooms)
+                $(".n_log_in").hide();
+                $("#log_in").html("Welcome back ");
+                $("#Test").show();
+            });
+            socket.on("create",function(str){
+                console.log("Création du channel : ")
+                console.log(str)
+         })
+         socket.on("messageChan",function(str){
+                console.log("je suis la !!!")
+                console.log(str.message)
+         })
+         socket.on("activer",function(str){
+                console.log("Activation du channel : ")
+                console.log(str)
+                console.log(socket)
+         })
+         socket.on("users",function(str){
+                console.log("liste des users: ")
+                console.log(str)
+         })
+         socket.on("join",function(str){
+                console.log("connection au channel : ")
+                console.log(str)
+                console.log(socket.rooms)
+         })
+
+            socket.on("invalid", function(){
+            alert("Username / Password Invalid, Please try again!");
+            });
+
+            socket.on("error", function(){
+            alert("Error: Please try again!");
+            });
+        });
+
+   
+      </script>
+      
+</head>
+<body>
+    <div class="n_log_in">
+        <input type="text" id="userName" placeholder="Username..." /><br>
+        <input type="password" id ="Password" placeholder="Password..." /><br>
+        <button id="Login_Register">Login / Register</button>
+        
+      </div>
+      <button id="Create">Create</button>
+      <button id="listUser">listUser</button>
+      <button id="connectChan">connectChan</button>
+      <input type="text" id="messageChan" placeholder="Username..." /><br>
+      <button id="active">Active</button>
+      <button id="send">send</button>
+      
+      <div class="log_in" style="display: none;">
+        text
+      </div>
+</body>
+</html>
